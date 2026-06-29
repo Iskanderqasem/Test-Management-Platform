@@ -1,0 +1,70 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: testos-postgres
+    environment:
+      POSTGRES_DB: testos
+      POSTGRES_USER: testos
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-testos_secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U testos']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: testos-redis
+    command: redis-server --requirepass ${REDIS_PASSWORD:-redis_secret}
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: testos-backend
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://testos:${POSTGRES_PASSWORD:-testos_secret}@postgres:5432/testos
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_secret}@redis:6379
+      JWT_SECRET: ${JWT_SECRET:-change-this-in-production}
+      JWT_EXPIRES_IN: 7d
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      PORT: 3001
+    ports:
+      - '3001:3001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    container_name: testos-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:3001
+      NODE_ENV: production
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
