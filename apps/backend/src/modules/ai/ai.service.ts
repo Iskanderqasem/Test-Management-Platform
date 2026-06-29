@@ -8,7 +8,8 @@ export class AiService {
   private openai: OpenAI;
 
   constructor(private config: ConfigService) {
-    this.openai = new OpenAI({ apiKey: this.config.get('OPENAI_API_KEY') });
+    const apiKey = this.config.get('OPENAI_API_KEY') || 'placeholder-configure-in-env';
+    this.openai = new OpenAI({ apiKey });
   }
 
   private async chat(systemPrompt: string, userPrompt: string, model = 'gpt-4o'): Promise<string> {

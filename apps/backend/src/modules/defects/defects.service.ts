@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Defect } from './defect.entity';
 import { AiService } from '../ai/ai.service';
-import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
