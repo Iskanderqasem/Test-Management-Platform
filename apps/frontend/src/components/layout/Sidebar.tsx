@@ -121,9 +121,14 @@ const navigation: NavItem[] = [
     icon: <BarChart3 className="h-4 w-4" />,
   },
   {
+    label: 'Example Templates',
+    href: '/examples',
+    icon: <BookOpen className="h-4 w-4" />,
+  },
+  {
     label: 'Knowledge Base',
     href: '/knowledge-base',
-    icon: <BookOpen className="h-4 w-4" />,
+    icon: <Library className="h-4 w-4" />,
   },
   {
     label: 'Environment Monitor',
