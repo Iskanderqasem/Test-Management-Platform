@@ -36,6 +36,7 @@ import {
   FolderKanban,
   PanelLeftClose,
   PanelLeft,
+  Users,
 } from 'lucide-react'
 
 interface NavItem {
@@ -128,6 +129,11 @@ const navigation: NavItem[] = [
     label: 'Environment Monitor',
     href: '/environments',
     icon: <Server className="h-4 w-4" />,
+  },
+  {
+    label: 'Admin & Users',
+    href: '/admin',
+    icon: <Users className="h-4 w-4" />,
   },
   {
     label: 'Settings',
@@ -240,8 +246,8 @@ export default function Sidebar() {
               <Shield className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-white font-bold text-sm leading-tight">TestFlow</p>
-              <p className="text-slate-400 text-xs">Enterprise</p>
+              <p className="text-white font-bold text-sm leading-tight">TestOS</p>
+              <p className="text-slate-400 text-xs">Project Management</p>
             </div>
           </div>
         ) : (
