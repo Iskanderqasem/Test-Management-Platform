@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { Plus, Search, Filter, FolderKanban, Users, Calendar, MoreHorizontal, TrendingUp } from 'lucide-react';
@@ -68,8 +68,8 @@ export default function ProjectsPage() {
           <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search projects…"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+            placeholder="Search projectsâ€¦"
             className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900"
           />
         </div>
@@ -93,7 +93,7 @@ export default function ProjectsPage() {
                     <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{p.description}</p>
                   </div>
                 </div>
-                <button className="p-1 hover:bg-gray-100 rounded" onClick={(e) => e.preventDefault()}>
+                <button className="p-1 hover:bg-gray-100 rounded" onClick={(e: React.ChangeEvent<HTMLInputElement>) => e.preventDefault()}>
                   <MoreHorizontal className="w-4 h-4 text-gray-400" />
                 </button>
               </div>
@@ -145,3 +145,4 @@ export default function ProjectsPage() {
     </div>
   );
 }
+

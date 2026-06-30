@@ -6,7 +6,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setTimeout(() => { setLoading(false); window.location.href = '/'; }, 1200);

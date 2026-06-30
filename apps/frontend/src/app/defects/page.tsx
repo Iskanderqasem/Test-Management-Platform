@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -47,7 +47,7 @@ export default function DefectsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Defect Management</h1>
-          <p className="text-gray-500 mt-1">{stats.open} open defects · {stats.critical} critical</p>
+          <p className="text-gray-500 mt-1">{stats.open} open defects Â· {stats.critical} critical</p>
         </div>
         <div className="flex gap-2">
           <button className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">
@@ -81,13 +81,13 @@ export default function DefectsPage() {
       <div className="flex gap-3 flex-wrap">
         <div className="relative">
           <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search defects…" className="pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 w-64" />
+          <input value={search} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)} placeholder="Search defectsâ€¦" className="pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 w-64" />
         </div>
-        <select value={filterSeverity} onChange={(e) => setFilterSeverity(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none">
+        <select value={filterSeverity} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilterSeverity(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none">
           <option value="">All Severities</option>
           {['Critical', 'High', 'Medium', 'Low'].map((s) => <option key={s}>{s}</option>)}
         </select>
-        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none">
+        <select value={filterStatus} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilterStatus(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none">
           <option value="">All Statuses</option>
           {['Open', 'In Progress', 'Fixed', 'Retest', 'Closed'].map((s) => <option key={s}>{s}</option>)}
         </select>
@@ -129,3 +129,4 @@ export default function DefectsPage() {
     </div>
   );
 }
+

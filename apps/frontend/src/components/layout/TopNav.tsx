@@ -43,31 +43,26 @@ export default function TopNav() {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  // Mock user
   const user = { name: 'Iskander Qasem', email: 'iskanderqasem@gmail.com', role: 'Test Manager', initials: 'IQ' };
 
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 gap-4 shrink-0 z-40">
-      {/* Search Bar */}
       <div className="flex-1 max-w-xl">
         <button
           onClick={() => setSearchOpen(true)}
           className="flex items-center gap-3 w-full max-w-md h-9 px-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-400 text-sm hover:border-blue-300 hover:bg-white transition-colors"
         >
           <Search className="h-4 w-4 shrink-0" />
-          <span className="flex-1 text-left">Search projects, test cases, defects…</span>
-          <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded border border-gray-200 bg-white text-xs text-gray-400 font-mono">⌘K</kbd>
+          <span className="flex-1 text-left">Search projects, test cases, defects...</span>
+          <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded border border-gray-200 bg-white text-xs text-gray-400 font-mono">Ctrl+K</kbd>
         </button>
       </div>
 
-      {/* Right Actions */}
       <div className="flex items-center gap-1">
-        {/* Quick Create */}
         <Link href="/projects/create" className="hidden md:flex items-center gap-1.5 h-8 px-3 rounded-lg bg-orange-500 text-white text-xs font-medium hover:bg-orange-600 transition-colors">
           <Zap className="h-3.5 w-3.5" /> Quick Create
         </Link>
 
-        {/* Notifications */}
         <div className="relative">
           <button onClick={() => { setNotifOpen(!notifOpen); setUserOpen(false); }} className="relative h-9 w-9 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
             <Bell className="h-4 w-4 text-gray-600" />
@@ -101,14 +96,12 @@ export default function TopNav() {
           )}
         </div>
 
-        {/* Help */}
         <button className="h-9 w-9 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
           <HelpCircle className="h-4 w-4 text-gray-600" />
         </button>
 
         <div className="h-6 w-px bg-gray-200 mx-1" />
 
-        {/* User Menu */}
         <div className="relative">
           <button onClick={() => { setUserOpen(!userOpen); setNotifOpen(false); }} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg hover:bg-gray-100 transition-colors">
             <div className="h-8 w-8 rounded-full bg-[#1e3a5f] flex items-center justify-center text-white text-xs font-bold shrink-0">
@@ -149,13 +142,12 @@ export default function TopNav() {
         </div>
       </div>
 
-      {/* Global Search Modal */}
       {searchOpen && (
         <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-start justify-center pt-20" onClick={() => setSearchOpen(false)}>
           <div className="w-full max-w-xl bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
               <Search className="h-5 w-5 text-gray-400 shrink-0" />
-              <input ref={searchRef} type="text" placeholder="Search projects, test cases, defects, requirements…" className="flex-1 text-sm outline-none placeholder:text-gray-400" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+              <input ref={searchRef} type="text" placeholder="Search projects, test cases, defects, requirements..." className="flex-1 text-sm outline-none placeholder:text-gray-400" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
               <button onClick={() => setSearchOpen(false)} className="text-gray-400 hover:text-gray-600"><X className="h-4 w-4" /></button>
             </div>
             <div className="p-4">
@@ -176,11 +168,11 @@ export default function TopNav() {
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-gray-500 py-4 text-center">Searching for &quot;{searchQuery}&quot;…</p>
+                <p className="text-sm text-gray-500 py-4 text-center">Searching for &quot;{searchQuery}&quot;...</p>
               )}
             </div>
             <div className="px-4 py-2 bg-gray-50 border-t border-gray-100 flex gap-4 text-xs text-gray-400">
-              <span>↵ select</span><span>↑↓ navigate</span><span>ESC close</span>
+              <span>Enter to select</span><span>Up/Down to navigate</span><span>Esc to close</span>
             </div>
           </div>
         </div>

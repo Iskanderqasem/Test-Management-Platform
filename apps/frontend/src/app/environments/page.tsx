@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { Server, Database, Globe, Cpu, RefreshCw, CheckCircle2, AlertTriangle, XCircle, Activity } from 'lucide-react';
@@ -70,7 +70,7 @@ export default function EnvironmentsPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const allServices = ENVIRONMENTS.flatMap((e) => e.services);
+  const allServices = ENVIRONMENTS.flatMap((e: React.ChangeEvent<HTMLInputElement>) => e.services);
   const healthy = allServices.filter((s) => s.status === 'healthy').length;
   const degraded = allServices.filter((s) => s.status === 'degraded').length;
   const down = allServices.filter((s) => s.status === 'down').length;
@@ -159,3 +159,4 @@ export default function EnvironmentsPage() {
     </div>
   );
 }
+

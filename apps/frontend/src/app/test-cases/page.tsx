@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -6,7 +6,7 @@ import { Plus, Sparkles, Filter, Search, Download, CheckSquare, ChevronDown } fr
 
 const TEST_CASES = [
   { id: 'TC-001', title: 'Valid user login with correct credentials', type: 'Functional', priority: 'High', status: 'Pass', automated: true, req: 'REQ-001', sprint: 'Sprint 3' },
-  { id: 'TC-002', title: 'Invalid login — wrong password shows error', type: 'Negative', priority: 'High', status: 'Pass', automated: true, req: 'REQ-001', sprint: 'Sprint 3' },
+  { id: 'TC-002', title: 'Invalid login â€” wrong password shows error', type: 'Negative', priority: 'High', status: 'Pass', automated: true, req: 'REQ-001', sprint: 'Sprint 3' },
   { id: 'TC-003', title: 'Account lockout after 5 failed attempts', type: 'Security', priority: 'Critical', status: 'Fail', automated: false, req: 'REQ-002', sprint: 'Sprint 3' },
   { id: 'TC-004', title: 'Session expires after 30 minutes inactivity', type: 'Functional', priority: 'Medium', status: 'Pass', automated: true, req: 'REQ-002', sprint: 'Sprint 3' },
   { id: 'TC-005', title: 'Billing update reflects within 5 seconds', type: 'Performance', priority: 'High', status: 'Blocked', automated: false, req: 'REQ-003', sprint: 'Sprint 4' },
@@ -99,9 +99,9 @@ export default function TestCasesPage() {
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative">
           <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search test cases…" className="pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 w-64" />
+          <input value={search} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)} placeholder="Search test casesâ€¦" className="pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 w-64" />
         </div>
-        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900">
+        <select value={filterStatus} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFilterStatus(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-900">
           <option value="">All Statuses</option>
           {['Pass', 'Fail', 'Blocked', 'Not Run', 'Skipped'].map((s) => <option key={s}>{s}</option>)}
         </select>
@@ -121,7 +121,7 @@ export default function TestCasesPage() {
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
               <th className="px-4 py-3 text-left w-8">
-                <input type="checkbox" onChange={(e) => setSelected(e.target.checked ? filtered.map((t) => t.id) : [])} className="accent-blue-900" />
+                <input type="checkbox" onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelected(e.target.checked ? filtered.map((t) => t.id) : [])} className="accent-blue-900" />
               </th>
               {['ID', 'Title', 'Type', 'Priority', 'Status', 'Automated', 'Requirement', 'Sprint'].map((h) => (
                 <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
@@ -140,7 +140,7 @@ export default function TestCasesPage() {
                 <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${priorityColor[tc.priority]}`}>{tc.priority}</span></td>
                 <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColor[tc.status]}`}>{tc.status}</span></td>
                 <td className="px-4 py-3">
-                  <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold ${tc.automated ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>{tc.automated ? '✓' : '—'}</span>
+                  <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold ${tc.automated ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>{tc.automated ? 'âœ“' : 'â€”'}</span>
                 </td>
                 <td className="px-4 py-3 text-xs font-mono text-gray-500">{tc.req}</td>
                 <td className="px-4 py-3 text-xs text-gray-500">{tc.sprint}</td>
@@ -152,3 +152,4 @@ export default function TestCasesPage() {
     </div>
   );
 }
+
