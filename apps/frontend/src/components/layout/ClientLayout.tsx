@@ -1,7 +1,6 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from 'react-hot-toast';
 import { usePathname } from 'next/navigation';
 import Sidebar from '@/components/layout/Sidebar';
 import TopNav from '@/components/layout/TopNav';
@@ -29,7 +28,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           </div>
         </div>
       )}
-      <Toaster position="top-right" />
     </QueryClientProvider>
   );
 }
