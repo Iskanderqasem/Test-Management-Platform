@@ -1,208 +1,298 @@
 'use client';
 
-import { useState } from 'react';
+import React from 'react';
+import Link from 'next/link';
 import {
-  FolderKanban, TestTube2, Bug, ShieldCheck, TrendingUp,
-  AlertTriangle, CheckCircle2, Clock, Zap, Brain,
+  TrendingUp, TrendingDown, Bug, CheckCircle2, AlertCircle,
+  Clock, Play, Zap, ArrowRight, Activity, BarChart3,
+  FileText, TestTube, Target, Shield, AlertTriangle,
+  ChevronRight, Circle, CheckCheck, XCircle, Pause,
 } from 'lucide-react';
-import {
-  AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
-} from 'recharts';
 
-const executionTrend = [
-  { date: 'Jun 23', passed: 42, failed: 8, blocked: 3 },
-  { date: 'Jun 24', passed: 55, failed: 12, blocked: 5 },
-  { date: 'Jun 25', passed: 61, failed: 9, blocked: 2 },
-  { date: 'Jun 26', passed: 70, failed: 7, blocked: 4 },
-  { date: 'Jun 27', passed: 78, failed: 11, blocked: 3 },
-  { date: 'Jun 28', passed: 85, failed: 6, blocked: 2 },
-  { date: 'Jun 29', passed: 92, failed: 5, blocked: 1 },
-];
+function KpiCard({ label, value, sub, trend, trendUp, color }: {
+  label: string; value: string | number; sub: string;
+  trend?: string; trendUp?: boolean; color: string;
+}) {
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow">
+      <div className="flex items-start justify-between mb-3">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{label}</p>
+        {trend && (
+          <span className={`flex items-center gap-0.5 text-xs font-semibold ${trendUp ? 'text-green-600' : 'text-red-500'}`}>
+            {trendUp ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+            {trend}
+          </span>
+        )}
+      </div>
+      <p className={`text-3xl font-bold ${color}`}>{value}</p>
+      <p className="text-xs text-gray-400 mt-1">{sub}</p>
+    </div>
+  );
+}
 
-const coverageData = [
-  { module: 'Auth', coverage: 94 },
-  { module: 'Billing', coverage: 78 },
-  { module: 'Network', coverage: 85 },
-  { module: 'Provisioning', coverage: 67 },
-  { module: 'APIs', coverage: 91 },
-  { module: 'UI', coverage: 73 },
-];
+function MiniProgress({ value, color }: { value: number; color: string }) {
+  return (
+    <div className="h-1.5 w-full rounded-full bg-gray-100 overflow-hidden">
+      <div className={`h-full rounded-full ${color} transition-all`} style={{ width: `${value}%` }} />
+    </div>
+  );
+}
 
-const defectSeverity = [
-  { name: 'Critical', value: 4, color: '#ef4444' },
-  { name: 'High', value: 12, color: '#f97316' },
-  { name: 'Medium', value: 28, color: '#eab308' },
-  { name: 'Low', value: 35, color: '#22c55e' },
-];
+function StatusBadge({ status }: { status: string }) {
+  const map: Record<string, string> = {
+    'Active': 'bg-green-100 text-green-700',
+    'Planning': 'bg-blue-100 text-blue-700',
+    'On Hold': 'bg-yellow-100 text-yellow-700',
+    'Critical': 'bg-red-100 text-red-700',
+    'Passed': 'bg-green-100 text-green-700',
+    'Failed': 'bg-red-100 text-red-700',
+    'In Progress': 'bg-blue-100 text-blue-700',
+    'Blocked': 'bg-orange-100 text-orange-700',
+  };
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium ${map[status] || 'bg-gray-100 text-gray-600'}`}>
+      {status}
+    </span>
+  );
+}
 
 const projects = [
-  { name: '5G Core Upgrade', status: 'In Progress', health: 'good', progress: 72, testCases: 340, defects: 8 },
-  { name: 'Billing System v3', status: 'UAT', health: 'warning', progress: 88, testCases: 210, defects: 14 },
-  { name: 'VoLTE Enhancement', status: 'Planning', health: 'good', progress: 25, testCases: 120, defects: 2 },
-  { name: 'IMS Migration', status: 'Execution', health: 'critical', progress: 54, testCases: 480, defects: 31 },
+  { name: 'Payment Gateway v3.2', progress: 78, pass: 94, total: 234, status: 'Active', priority: 'High' },
+  { name: 'Mobile App Release 5.1', progress: 45, pass: 71, total: 189, status: 'Active', priority: 'Critical' },
+  { name: 'API Integration Suite', progress: 92, pass: 98, total: 156, status: 'Active', priority: 'Medium' },
+  { name: 'Dashboard Redesign', progress: 20, pass: 60, total: 45, status: 'Planning', priority: 'Low' },
 ];
 
-const aiInsights = [
-  { type: 'warning', message: 'Billing module coverage dropped below 80% threshold' },
-  { type: 'info', message: '23 regression test cases identified for the IMS migration change' },
-  { type: 'success', message: 'VoLTE smoke suite passed all 45 cases — ready for full regression' },
-  { type: 'warning', message: '4 critical defects open in IMS Migration — release risk HIGH' },
+const recentDefects = [
+  { id: 'DEF-0142', title: 'Payment fails on Visa cards > $500', severity: 'Critical', status: 'In Progress', assignee: 'IQ' },
+  { id: 'DEF-0141', title: 'Login timeout not enforced on mobile', severity: 'Major', status: 'Blocked', assignee: 'SA' },
+  { id: 'DEF-0139', title: 'Export PDF missing header row', severity: 'Minor', status: 'In Progress', assignee: 'MK' },
+  { id: 'DEF-0138', title: 'Push notification delayed by 30s', severity: 'Moderate', status: 'In Progress', assignee: 'IQ' },
 ];
 
-const MetricCard = ({ icon: Icon, label, value, sub, color }: any) => (
-  <div className="bg-white rounded-xl border border-gray-200 p-5 flex items-start gap-4 shadow-sm hover:shadow-md transition-shadow">
-    <div className={`p-3 rounded-lg ${color}`}>
-      <Icon className="w-5 h-5 text-white" />
-    </div>
-    <div>
-      <p className="text-sm text-gray-500 font-medium">{label}</p>
-      <p className="text-2xl font-bold text-gray-900 mt-0.5">{value}</p>
-      {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
-    </div>
-  </div>
-);
+const recentActivity = [
+  { icon: CheckCircle2, color: 'text-green-500', msg: 'Test run "Sprint 23 Regression" completed — 94% pass', time: '10m ago' },
+  { icon: Bug, color: 'text-red-500', msg: 'DEF-0142 assigned to Iskander Qasem', time: '45m ago' },
+  { icon: Zap, color: 'text-purple-500', msg: 'AI generated 47 test cases for Payment module', time: '2h ago' },
+  { icon: AlertCircle, color: 'text-yellow-500', msg: 'Staging environment degraded — response time 3.2s', time: '3h ago' },
+  { icon: Play, color: 'text-blue-500', msg: 'Test plan "API v2 Smoke" started by Sara Ahmed', time: '5h ago' },
+  { icon: FileText, color: 'text-gray-400', msg: 'Requirements gap analysis completed for Sprint 24', time: '1d ago' },
+];
 
-const healthColor: Record<string, string> = {
-  good: 'bg-green-100 text-green-700',
-  warning: 'bg-yellow-100 text-yellow-700',
-  critical: 'bg-red-100 text-red-700',
+const execResults = [
+  { label: 'Passed', count: 1284, pct: 74, color: 'bg-green-500', textColor: 'text-green-600' },
+  { label: 'Failed', count: 186, pct: 11, color: 'bg-red-500', textColor: 'text-red-600' },
+  { label: 'Blocked', count: 124, pct: 7, color: 'bg-orange-400', textColor: 'text-orange-600' },
+  { label: 'Skipped', count: 139, pct: 8, color: 'bg-gray-300', textColor: 'text-gray-500' },
+];
+
+const severityColors: Record<string, string> = {
+  Critical: 'bg-red-100 text-red-700 border-red-200',
+  Major: 'bg-orange-100 text-orange-700 border-orange-200',
+  Moderate: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+  Minor: 'bg-blue-100 text-blue-700 border-blue-200',
 };
 
 export default function DashboardPage() {
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500 mt-1">Enterprise Test Management Platform — AI-Powered QA Hub</p>
-      </div>
-
-      {/* Metric Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <MetricCard icon={FolderKanban} label="Active Projects" value="4" sub="2 approaching deadline" color="bg-blue-900" />
-        <MetricCard icon={TestTube2} label="Total Test Cases" value="1,150" sub="89% with coverage" color="bg-indigo-600" />
-        <MetricCard icon={Bug} label="Open Defects" value="55" sub="4 critical, 12 high" color="bg-orange-500" />
-        <MetricCard icon={ShieldCheck} label="Avg Coverage" value="81%" sub="+3% from last sprint" color="bg-green-600" />
-      </div>
-
-      {/* Charts Row */}
-      <div className="grid grid-cols-3 gap-4">
-        {/* Execution Trend */}
-        <div className="col-span-2 bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-          <h3 className="font-semibold text-gray-800 mb-4">Execution Trend — Last 7 Days</h3>
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={executionTrend}>
-              <defs>
-                <linearGradient id="passed" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#22c55e" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="failed" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip />
-              <Legend />
-              <Area type="monotone" dataKey="passed" stroke="#22c55e" fill="url(#passed)" strokeWidth={2} />
-              <Area type="monotone" dataKey="failed" stroke="#ef4444" fill="url(#failed)" strokeWidth={2} />
-              <Area type="monotone" dataKey="blocked" stroke="#f97316" strokeDasharray="4 2" fill="none" strokeWidth={2} />
-            </AreaChart>
-          </ResponsiveContainer>
+    <div className="space-y-6 max-w-screen-2xl">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-sm text-gray-400 mt-0.5">{today}</p>
         </div>
+        <div className="flex items-center gap-2">
+          <Link href="/test-cases/generate" className="flex items-center gap-1.5 h-8 px-4 rounded-lg bg-[#1e3a5f] text-white text-xs font-semibold hover:bg-[#162b47] transition-colors shadow-sm">
+            <Zap className="h-3.5 w-3.5" /> Generate Test Cases
+          </Link>
+          <Link href="/test-execution" className="flex items-center gap-1.5 h-8 px-4 rounded-lg border border-gray-300 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition-colors">
+            <Play className="h-3.5 w-3.5" /> Run Tests
+          </Link>
+        </div>
+      </div>
 
-        {/* Defect Severity */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-          <h3 className="font-semibold text-gray-800 mb-4">Open Defects by Severity</h3>
-          <ResponsiveContainer width="100%" height={160}>
-            <PieChart>
-              <Pie data={defectSeverity} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={3} dataKey="value">
-                {defectSeverity.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="mt-2 space-y-1">
-            {defectSeverity.map((d) => (
-              <div key={d.name} className="flex items-center justify-between text-sm">
-                <span className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: d.color }} />
-                  {d.name}
-                </span>
-                <span className="font-semibold">{d.value}</span>
-              </div>
-            ))}
+      {/* KPI Row */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        <KpiCard label="Pass Rate" value="91.2%" sub="vs 87.4% last sprint" trend="+3.8%" trendUp color="text-green-600" />
+        <KpiCard label="Active Tests" value="1,733" sub="across 4 projects" trend="+12%" trendUp color="text-[#1e3a5f]" />
+        <KpiCard label="Open Defects" value="34" sub="8 critical severity" trend="-5" trendUp color="text-red-600" />
+        <KpiCard label="Automation %" value="68%" sub="target: 80%" trend="+4%" trendUp color="text-purple-600" />
+        <KpiCard label="Avg Cycle Time" value="2.4d" sub="from open to close" trend="-0.3d" trendUp color="text-orange-600" />
+        <KpiCard label="Requirements" value="247" sub="18 pending review" color="text-blue-600" />
+      </div>
+
+      {/* Row 2 */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Active Projects */}
+        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+            <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+              <Target className="h-4 w-4 text-[#1e3a5f]" /> Active Projects
+            </h2>
+            <Link href="/projects" className="text-xs text-[#1e3a5f] font-semibold flex items-center gap-1 hover:underline">
+              View all <ChevronRight className="h-3 w-3" />
+            </Link>
           </div>
-        </div>
-      </div>
-
-      {/* Bottom Row */}
-      <div className="grid grid-cols-3 gap-4">
-        {/* Coverage by Module */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-          <h3 className="font-semibold text-gray-800 mb-4">Coverage by Module</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={coverageData} layout="vertical">
-              <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11 }} unit="%" />
-              <YAxis dataKey="module" type="category" tick={{ fontSize: 11 }} width={85} />
-              <Tooltip formatter={(v) => `${v}%`} />
-              <Bar dataKey="coverage" fill="#1e3a5f" radius={[0, 4, 4, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Project Health */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-          <h3 className="font-semibold text-gray-800 mb-4">Project Health</h3>
-          <div className="space-y-3">
+          <div className="divide-y divide-gray-50">
             {projects.map((p) => (
-              <div key={p.name} className="flex items-center gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="text-sm font-medium text-gray-800 truncate">{p.name}</p>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${healthColor[p.health]}`}>{p.status}</span>
+              <div key={p.name} className="px-5 py-4 hover:bg-gray-50 transition-colors group cursor-pointer">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 group-hover:text-[#1e3a5f] truncate">{p.name}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <StatusBadge status={p.status} />
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${p.priority === 'Critical' ? 'bg-red-50 text-red-600 border-red-200' : p.priority === 'High' ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-gray-50 text-gray-500 border-gray-200'}`}>
+                        {p.priority}
+                      </span>
+                    </div>
                   </div>
-                  <div className="w-full bg-gray-100 rounded-full h-1.5">
-                    <div
-                      className="h-1.5 rounded-full bg-blue-900"
-                      style={{ width: `${p.progress}%` }}
-                    />
+                  <div className="text-right ml-4 shrink-0">
+                    <p className={`text-lg font-bold ${p.pass >= 90 ? 'text-green-600' : p.pass >= 70 ? 'text-yellow-600' : 'text-red-600'}`}>{p.pass}%</p>
+                    <p className="text-[10px] text-gray-400">pass rate</p>
                   </div>
-                  <div className="flex justify-between text-xs text-gray-400 mt-1">
-                    <span>{p.testCases} cases</span>
-                    <span>{p.defects} defects</span>
-                    <span>{p.progress}%</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex-1">
+                    <MiniProgress value={p.progress} color={p.progress > 80 ? 'bg-green-500' : p.progress > 50 ? 'bg-blue-500' : 'bg-orange-400'} />
                   </div>
+                  <span className="text-xs text-gray-400 shrink-0">{p.progress}% complete</span>
+                  <span className="text-xs text-gray-400 shrink-0">{p.total} cases</span>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* AI Insights */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            <Brain className="w-4 h-4 text-blue-900" />
-            <h3 className="font-semibold text-gray-800">AI Insights</h3>
+        {/* Execution Breakdown */}
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100">
+            <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+              <Activity className="h-4 w-4 text-[#1e3a5f]" /> Execution Status
+            </h2>
+            <p className="text-xs text-gray-400 mt-0.5">Last 7 days · 1,733 total</p>
           </div>
-          <div className="space-y-3">
-            {aiInsights.map((ins, i) => (
-              <div key={i} className={`flex gap-2 p-2.5 rounded-lg text-sm ${
-                ins.type === 'warning' ? 'bg-amber-50 text-amber-800' :
-                ins.type === 'critical' ? 'bg-red-50 text-red-800' :
-                ins.type === 'success' ? 'bg-green-50 text-green-800' :
-                'bg-blue-50 text-blue-800'
-              }`}>
-                {ins.type === 'warning' ? <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" /> :
-                 ins.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" /> :
-                 <Zap className="w-4 h-4 shrink-0 mt-0.5" />}
-                <p>{ins.message}</p>
+          <div className="px-5 pt-4">
+            <div className="flex rounded-full overflow-hidden h-3">
+              {execResults.map((r) => (
+                <div key={r.label} className={`${r.color} h-full`} style={{ width: `${r.pct}%` }} />
+              ))}
+            </div>
+          </div>
+          <div className="px-5 py-4 space-y-3.5">
+            {execResults.map((r) => (
+              <div key={r.label} className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className={`h-2.5 w-2.5 rounded-full shrink-0 ${r.color}`} />
+                  <span className="text-sm text-gray-600">{r.label}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className={`text-sm font-bold ${r.textColor}`}>{r.count.toLocaleString()}</span>
+                  <span className="text-xs text-gray-400 w-7 text-right">{r.pct}%</span>
+                </div>
               </div>
             ))}
           </div>
+          <div className="px-5 pb-5">
+            <Link href="/test-execution" className="flex items-center justify-center gap-1.5 w-full h-8 rounded-lg border border-[#1e3a5f] text-[#1e3a5f] text-xs font-semibold hover:bg-[#1e3a5f] hover:text-white transition-colors">
+              Full Report <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Row 3 */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Defects Table */}
+        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+            <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+              <Bug className="h-4 w-4 text-red-500" /> Open Defects
+            </h2>
+            <Link href="/defects" className="text-xs text-[#1e3a5f] font-semibold flex items-center gap-1 hover:underline">
+              View all 34 <ChevronRight className="h-3 w-3" />
+            </Link>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-100">
+                  <th className="text-left px-5 py-2.5 text-xs font-semibold text-gray-500">ID</th>
+                  <th className="text-left px-3 py-2.5 text-xs font-semibold text-gray-500">Title</th>
+                  <th className="text-left px-3 py-2.5 text-xs font-semibold text-gray-500">Severity</th>
+                  <th className="text-left px-3 py-2.5 text-xs font-semibold text-gray-500">Status</th>
+                  <th className="text-left px-5 py-2.5 text-xs font-semibold text-gray-500">Owner</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {recentDefects.map((d) => (
+                  <tr key={d.id} className="hover:bg-gray-50 transition-colors cursor-pointer">
+                    <td className="px-5 py-3">
+                      <span className="text-xs font-mono font-bold text-[#1e3a5f]">{d.id}</span>
+                    </td>
+                    <td className="px-3 py-3 max-w-[200px]">
+                      <p className="text-xs font-medium text-gray-800 truncate">{d.title}</p>
+                    </td>
+                    <td className="px-3 py-3">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded border text-[10px] font-bold ${severityColors[d.severity]}`}>
+                        {d.severity}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3">
+                      <StatusBadge status={d.status} />
+                    </td>
+                    <td className="px-5 py-3">
+                      <div className="h-6 w-6 rounded-full bg-[#1e3a5f] text-white text-[10px] font-bold flex items-center justify-center">
+                        {d.assignee}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Activity Feed */}
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100">
+            <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+              <Activity className="h-4 w-4 text-[#1e3a5f]" /> Recent Activity
+            </h2>
+          </div>
+          <div className="divide-y divide-gray-50 overflow-y-auto max-h-72">
+            {recentActivity.map((a, i) => (
+              <div key={i} className="flex gap-3 px-5 py-3 hover:bg-gray-50 transition-colors">
+                <a.icon className={`h-4 w-4 shrink-0 mt-0.5 ${a.color}`} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-gray-700 leading-snug">{a.msg}</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">{a.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* AI Banner */}
+      <div className="bg-gradient-to-r from-[#0f2744] to-[#1e3a5f] rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+            <Shield className="h-5 w-5 text-[#f97316]" />
+          </div>
+          <div>
+            <p className="text-white font-bold text-sm">AI Test Manager</p>
+            <p className="text-slate-400 text-xs">Generate strategies, analyze defects, identify coverage gaps</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2 sm:ml-auto">
+          {['Generate test cases', 'Analyze defect trends', 'Coverage gap report', 'Open AI Assistant'].map((action) => (
+            <Link key={action} href="/ai-assistant" className="h-7 px-3 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors border border-white/10 flex items-center">
+              {action}
+            </Link>
+          ))}
         </div>
       </div>
     </div>

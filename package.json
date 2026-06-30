@@ -17,6 +17,8 @@
     "docker:build": "docker-compose build"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "autoprefixer": "^10.5.2",
+    "concurrently": "^8.2.2",
+    "postcss": "^8.5.16"
   }
 }
